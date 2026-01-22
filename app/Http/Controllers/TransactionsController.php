@@ -12,7 +12,7 @@ class TransactionsController extends Controller
      */
     public function index()
     {
-        //
+        return view('revenue.index');
     }
 
     /**

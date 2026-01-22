@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\TransactionsController;
 Route::get('/', function () {
     return view('home');
 });
@@ -22,3 +25,16 @@ Route::post('register', [RegisterController::class, 'store'])->name('register.po
 Route::get('dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
+
+
+// Route for handling customer related 
+Route::get('customers', [CustomerController::class, 'index'])->name('customer');
+
+
+
+// Route for handling appointment related 
+Route::get('appointments', [AppointmentController::class, 'index'])->name('appointment');
+
+
+// revunue route 
+Route::get('revenue', [TransactionsController::class, 'index'])->name('revenue');
