@@ -243,7 +243,7 @@
                     <button class="btn-primary py-3 px-8 rounded-lg text-lg font-medium flex items-center" onclick="showPage('registerPage')"><a href="{{route('register')}}"> Get Started <i class="fas fa-arrow-right ml-2"></i></a>
                        
                     </button>
-                    <button class="py-3 px-8 rounded-lg text-lg font-medium border border-gray-300 dark:border-gray-600 flex items-center"><a href=""><i class="fab fa-github mr-2"></i> View on GitHub</a>
+                    <button class="py-3 px-8 rounded-lg text-lg font-medium border border-gray-300 dark:border-gray-600 flex items-center"><a href="{{route('dashboard')}}"><i class="fa-solid fa-gauge-high mr-2"></i> Go To Dashboard</a>
                         
                     </button>
                     <button class="py-3 px-8 rounded-lg text-lg font-medium text-blue-600 dark:text-blue-400" onclick="showPage('loginPage')"><a href="{{route('login')}}"> Already have an account? Sign In</a>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Register - AllNOne</title>
       <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -72,7 +72,7 @@
                         <p class="text-gray-500 dark:text-gray-400">
                             Already have an account?
                             <button type="button" class="text-blue-600 dark:text-blue-400 font-medium ml-1" onclick="showPage('loginPage')">
-                                Sign in
+                                <a href="{{route('login')}}">Sign in</a>
                             </button>
                         </p>
                     </div>
@@ -81,8 +81,8 @@
             
             <div class="text-center mt-8">
                 <button class="text-gray-500 dark:text-gray-400" onclick="showPage('landingPage')">
-                    <i class="fas fa-arrow-left mr-2"></i> Back to Home
-                </button>
+                    <a href="/"><i class="fas fa-arrow-left mr-2"></i> Back to Home
+                </button></a>
             </div>
         </div>
     </div>

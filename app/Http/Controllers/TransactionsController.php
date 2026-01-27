@@ -62,4 +62,9 @@ class TransactionsController extends Controller
     {
         //
     }
+
+    public function analysis()
+    {
+        return view('revenue.analytics');
+    }
 }

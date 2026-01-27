@@ -327,13 +327,36 @@
         <!-- Sidebar -->
         <aside class="hidden lg:flex flex-col w-64 min-h-screen border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
             <!-- Logo -->
-            @include('layouts.brand')
+            <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                        <i class="fas fa-chart-pie text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight">ServiceDash</h1>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Business Dashboard</p>
+                    </div>
+                </div>
+            </div>
 
-            <!-- Navigation -->
-            @include('layouts.nav')
+            <!-- place nav bar  -->
+             @include('layouts.nav')
 
             <!-- User Profile -->
-            @include('layouts.owner')
+            <div class="p-6 border-t border-gray-200 dark:border-gray-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                        JD
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium truncate">John Doe</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">Service Business Owner</p>
+                    </div>
+                    <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <i class="fas fa-chevron-down text-gray-500"></i>
+                    </button>
+                </div>
+            </div>
         </aside>
 
         <!-- Mobile Sidebar -->

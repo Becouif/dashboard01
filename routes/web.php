@@ -38,3 +38,8 @@ Route::get('appointments', [AppointmentController::class, 'index'])->name('appoi
 
 // revunue route 
 Route::get('revenue', [TransactionsController::class, 'index'])->name('revenue');
+Route::get('analysis', [TransactionsController::class, 'analysis'])->name('analytics');
+
+Route::get('test', function () {
+    return view('layouts.main');
+});
