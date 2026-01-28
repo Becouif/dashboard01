@@ -401,17 +401,7 @@
         <!-- Sidebar -->
         <aside class="hidden lg:flex flex-col w-64 min-h-screen border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
             <!-- Logo -->
-            <div class="p-6 border-b border-gray-200 dark:border-gray-800">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                        <i class="fas fa-chart-pie text-white text-lg"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold tracking-tight">ServiceDash</h1>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Appointment Management</p>
-                    </div>
-                </div>
-            </div>
+            @include('layouts.brand')
 
             <!-- Navigation -->
             @include('layouts.nav')
@@ -482,10 +472,10 @@
                             </button>
                             
                             <!-- Add New Appointment Button -->
-                            <button id="openAppointmentModal" class="btn-primary px-4 py-2 rounded-lg font-medium flex items-center space-x-2">
+                            <a href=""><button id="openAppointmentModal" class="btn-primary px-4 py-2 rounded-lg font-medium flex items-center space-x-2">
                                 <i class="fas fa-plus"></i>
                                 <span>New Appointment</span>
-                            </button>
+                            </button></a>
                         </div>
                     </div>
                 </div>

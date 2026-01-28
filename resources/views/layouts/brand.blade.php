@@ -5,10 +5,18 @@
                     </div>
                     <div>
                         <a href="{{route('dashboard')}}"><h1 class="text-xl font-bold tracking-tight">ServiceDash</h1>
-                        @if (Route::has('appointment'))
-                                                  <p class="text-xs text-gray-500 dark:text-gray-400">Appointment Management</p>
+                        @if (request()->routeIs('appointment'))
+                          <p class="text-xs text-gray-500 dark:text-gray-400">Appointment Management</p>
+                          @elseif (request()->routeIs('customer'))
+                          <p class="text-xs text-gray-500 dark:text-gray-400">Customer Management</p>
+                          @elseif (request()->routeIs('revenue'))
+                          <p class="text-xs text-gray-500 dark:text-gray-400">Revenue Analytics</p>
+                          @elseif (request()->routeIs('analytics'))
+                          <p class="text-xs text-gray-500 dark:text-gray-400">Business Analytics</p>
+                          @else
+                          <p class="text-xs text-gray-500 dark:text-gray-400">Business Dashboard</p></a>
                         @endif
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Business Dashboard</p></a>
+
                     </div>
                 </div>
             </div>
