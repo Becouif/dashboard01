@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\User;
 use Illuminate\Http\Request;
+
+
 
 class CustomerController extends Controller
 {
@@ -12,7 +15,10 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        return view('customer.index');
+        $customers = Customer::all();
+        $counts = $customers->count();
+
+        return view('customer.index',compact('customers','counts'));
     }
 
     /**
@@ -20,7 +26,7 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        //
+        return view('customer.add-customer');
     }
 
     /**
@@ -28,7 +34,34 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+
+        $validated = $request->validate([
+            'firstName' => 'required',
+            'lastName' => 'required',
+            'email' => 'required',
+            'phone' => 'required',
+
+        ]);
+        $data = $request->all();
+        
+        $userID = User::where('email', 'admin@admin.com')->value('id');
+
+        // dd($userID);
+
+
+        Customer::create([
+            'user_id' => $userID,
+            'first_name'=> $data['firstName'],
+            'last_name' => $data['lastName'],
+            'email' => $data['email'],
+            'phone' => $data['phone'],
+            
+            'customer_since' => now(),
+            'total_spent' => 0.00,
+            
+        ]);
+        return redirect()->route('customer')->with('message', 'successfully added');
     }
 
     /**

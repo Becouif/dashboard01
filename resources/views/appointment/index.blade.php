@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet"/>
     <style>
         :root {
             --primary: #4361ee;
@@ -393,6 +394,18 @@
             color: white;
             font-weight: 600;
         }
+
+        /* start of list styling  */
+          body { font-family: 'DM Sans', sans-serif; }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    tbody tr:nth-child(1) { animation: fadeInUp 0.2s ease 0.05s both; }
+    tbody tr:nth-child(2) { animation: fadeInUp 0.2s ease 0.10s both; }
+    tbody tr:nth-child(3) { animation: fadeInUp 0.2s ease 0.15s both; }
+    tbody tr:nth-child(4) { animation: fadeInUp 0.2s ease 0.20s both; }
+    tbody tr:nth-child(5) { animation: fadeInUp 0.2s ease 0.25s both; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -442,6 +455,7 @@
                 </div>
                 <nav class="p-4">
                     <!-- Mobile navigation items would go here -->
+                    @include('layouts.nav')
                 </nav>
             </div>
         </div>
@@ -472,7 +486,7 @@
                             </button>
                             
                             <!-- Add New Appointment Button -->
-                            <a href=""><button id="openAppointmentModal" class="btn-primary px-4 py-2 rounded-lg font-medium flex items-center space-x-2">
+                            <a href="#appointment-form"><button id="openAppointmentModal" class="btn-primary px-4 py-2 rounded-lg font-medium flex items-center space-x-2">
                                 <i class="fas fa-plus"></i>
                                 <span>New Appointment</span>
                             </button></a>
@@ -576,73 +590,69 @@
                 <!-- Appointment Lists -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Left Column: Create Appointment Form -->
-                    <div class="lg:col-span-1">
+                    <div class="lg:col-span-1" id="appointment-form">
                         <div class="card p-6">
                             <h3 class="text-lg font-semibold mb-6">Create New Appointment</h3>
                             
-                            <form id="appointmentForm">
+                            <form id="appointmentForm" action="{{route('appointment.save')}}" method="POST" >@csrf
                                 <!-- Customer Selection -->
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer</label>
-                                    <select id="customerSelect" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent">
+                                    <select name="customer" id="customerSelect" class="@error('customer')
+                                        is-invalid
+                                    @enderror w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent">
                                         <option value="">Select a customer</option>
-                                        <option value="1">John Smith (john.smith@email.com)</option>
-                                        <option value="2">Sarah Johnson (sarah.j@email.com)</option>
-                                        <option value="3">Michael Brown (michael.b@email.com)</option>
-                                        <option value="4">Alex Williams (alex.w@email.com)</option>
-                                        <option value="5">Emily Davis (emily.d@email.com)</option>
+                                        @foreach ($customers as $key=>$customer)
+                                        <option  value="{{$customer->id}}">{{ $customer->first_name }} {{ $customer->last_name }} {{ $customer->email }}</option>
+                                        @endforeach
                                     </select>
+                                    @error('customer')
+                                        <p style="color:red;">{{$message}}</p>
+                                    @enderror
                                 </div>
 
                                 <!-- Service Type -->
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Service Type</label>
+                                    <!-- start of foreach for services list  -->
+
                                     <div class="grid grid-cols-2 gap-2">
-                                        <label class="flex items-center p-3 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-700">
-                                            <input type="radio" name="serviceType" value="ac" class="mr-3">
-                                            <div class="flex items-center">
-                                                <div class="w-8 h-8 rounded-md bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mr-2">
-                                                    <i class="fas fa-tools text-blue-600 dark:text-blue-400"></i>
-                                                </div>
-                                                <span>AC Repair</span>
-                                            </div>
-                                        </label>
-                                        <label class="flex items-center p-3 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-purple-300 dark:hover:border-purple-700">
-                                            <input type="radio" name="serviceType" value="plumbing" class="mr-3">
-                                            <div class="flex items-center">
+ 
+                                        @foreach ($services as $key=>$service)
+                                        <label class="flex items-center p-3 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 transition-colors">
+                                            <input type="radio" name="service" value="{{$service->id}}" class="mr-3">
+                                            <div class="flex items-center flex-1">
                                                 <div class="w-8 h-8 rounded-md bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mr-2">
                                                     <i class="fas fa-faucet text-purple-600 dark:text-purple-400"></i>
                                                 </div>
-                                                <span>Plumbing</span>
+                                                <span class="font-medium">{{$service->name}}</span>
                                             </div>
                                         </label>
-                                        <label class="flex items-center p-3 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-yellow-300 dark:hover:border-yellow-700">
-                                            <input type="radio" name="serviceType" value="electrical" class="mr-3">
-                                            <div class="flex items-center">
-                                                <div class="w-8 h-8 rounded-md bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center mr-2">
-                                                    <i class="fas fa-bolt text-yellow-600 dark:text-yellow-400"></i>
-                                                </div>
-                                                <span>Electrical</span>
-                                            </div>
-                                        </label>
-                                        <label class="flex items-center p-3 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-green-300 dark:hover:border-green-700">
-                                            <input type="radio" name="serviceType" value="painting" class="mr-3">
-                                            <div class="flex items-center">
-                                                <div class="w-8 h-8 rounded-md bg-green-100 dark:bg-green-900/30 flex items-center justify-center mr-2">
-                                                    <i class="fas fa-paint-roller text-green-600 dark:text-green-400"></i>
-                                                </div>
-                                                <span>Painting</span>
-                                            </div>
-                                        </label>
+                                        @endforeach
+                                        @error('service')
+                                            <p style="color:red;">{{$message}}</p>
+                                        @enderror
                                     </div>
+                                    
                                 </div>
 
                                 <!-- Date & Time -->
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date & Time</label>
                                     <div class="grid grid-cols-2 gap-3">
-                                        <input type="date" id="appointmentDate" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent">
-                                        <input type="time" id="appointmentTime" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent">
+                                        <input type="date" name="date" id="appointmentDate" class="@error('date')
+                                            is-invalid
+                                        @enderror py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent">
+                                        @error('date')
+                                        <p style="color:red;">{{$message}}</p>
+                                            
+                                        @enderror
+                                        <input type="time" name="time" id="appointmentTime" class="@error('time')
+                                            is-invalid
+                                        @enderror py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent">
+                                        @error('time')
+                                            <p style="color:red;">{{$message}}</p>
+                                        @enderror
                                     </div>
                                 </div>
 
@@ -650,17 +660,26 @@
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Duration</label>
                                     <div class="grid grid-cols-4 gap-2">
-                                        <button type="button" class="duration-btn py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-700" data-duration="30">30 min</button>
-                                        <button type="button" class="duration-btn py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-700" data-duration="60">1 hour</button>
-                                        <button type="button" class="duration-btn py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-700" data-duration="90">1.5 hours</button>
-                                        <button type="button" class="duration-btn py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-700" data-duration="120">2 hours</button>
+                                        
+                                        <button type="button" class="duration-btn py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-700" data-duration="30">30 min <input type="hidden" name="duration"  value="30"></button>
+                                        <button type="button" class="duration-btn py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-700" data-duration="60">1 hour <input type="hidden" name="duration" value="60"></button>
+                                        <button type="button" class="duration-btn py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-700" data-duration="90">1.5 hours <input type="hidden" name="duration" value="90"></button>
+                                        <button type="button"  class="duration-btn py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-700" data-duration="120">2 hours <input type="hidden" name="duration" value="120"></button>
                                     </div>
+                                    @error('duration')
+                                        <p style="color:red;">{{$message}}</p>
+                                    @enderror
                                 </div>
 
                                 <!-- Notes -->
                                 <div class="mb-6">
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</label>
-                                    <textarea id="appointmentNotes" rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent" placeholder="Add any special instructions or notes..."></textarea>
+                                    <textarea id="appointmentNotes" name="note" rows="3" class=" @error('note')
+                                        is-invalid
+                                    @enderror px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent" placeholder="Add any special instructions or notes...">{{old('note')}}</textarea>
+                                    @error('note')
+                                        <p style="color:red;">{{$message}}</p>
+                                    @enderror
                                 </div>
 
                                 <!-- Submit Button -->
@@ -702,43 +721,79 @@
 
                     <!-- Right Column: Appointment List -->
                     <div class="lg:col-span-2">
-                        <div class="card">
-                            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                    <div>
-                                        <h3 class="text-lg font-semibold" id="appointmentListTitle">Upcoming Appointments</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1" id="appointmentListSubtitle">Appointments scheduled for the next 7 days</p>
-                                    </div>
-                                    <div class="flex items-center space-x-3">
-                                        <div class="relative">
-                                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                                            <input type="text" id="appointmentSearch" placeholder="Search appointments..." class="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent w-full sm:w-64">
+                        <!-- appointment list go here -->
+                         @if(count($appointments)> 0)
+                            <!-- Table -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                        
+                                <!-- Head -->
+                                <thead>
+                                <tr class="border-b border-gray-800">
+                                    <th class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-3">Customer</th>
+                                    <th class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-4 py-3">Date</th>
+                                    <th class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-4 py-3">Time</th>
+                                    <th class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-4 py-3">Service</th>
+                                    <th class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-4 py-3">Price</th>
+                                    <th class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-4 py-3">Payment Status</th>
+                                    <th class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-4 py-3">Notes</th>
+                                    <th class="px-5 py-3"></th>
+                                </tr>
+                                </thead>
+                        
+                                <!-- Body -->
+                                <tbody class="divide-y divide-gray-800/60">
+                                @foreach ($appointments as $key=>$appointment)
+                                <!-- Row 1 -->
+                                <tr class="group hover:bg-gray-50 transition-colors">
+                                    <td class="px-5 py-3.5">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-blue-900 text-blue-300 flex items-center justify-center text-xs font-semibold shrink-0">EJ</div>
+                                        <div>
+                                        <p class="font-medium text-gray-800 leading-tight">Emma Johnson</p>
+                                        <p class="text-xs text-gray-400 font-mono">APT-001</p>
                                         </div>
-                                        <button class="btn-secondary px-4 py-2 rounded-lg font-medium flex items-center space-x-2">
-                                            <i class="fas fa-filter"></i>
-                                            <span>Filter</span>
-                                        </button>
                                     </div>
-                                </div>
-                            </div>
-
-                            <!-- Appointment List -->
-                            <div class="overflow-y-auto max-h-[600px]" id="appointmentList">
-                                <!-- Appointments will be dynamically loaded here -->
-                            </div>
-
-                            <!-- Empty State -->
-                            <div id="emptyAppointmentState" class="text-center py-12 hidden">
-                                <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full mb-4">
-                                    <i class="fas fa-calendar text-gray-400 text-2xl"></i>
-                                </div>
-                                <h4 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">No appointments found</h4>
-                                <p class="text-gray-600 dark:text-gray-400 mb-6">Try changing your filters or create a new appointment</p>
-                                <button id="createFirstAppointment" class="btn-primary px-6 py-3 rounded-lg text-white font-medium">
-                                    <i class="fas fa-plus mr-2"></i> Create First Appointment
-                                </button>
-                            </div>
+                                    </td>
+                                    <td class="px-4 py-3.5 text-gray-500">Mar 21, 2026</td>
+                                    <td class="px-4 py-3.5 text-gray-700">:00 AM</td>
+                                    <td class="px-4 py-3.5">
+                                    <span class="inline-flex items-center gap-1.5 text-gray-500">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0"></span>Check-up
+                                    </span>
+                                    </td>
+                                    
+                                    <td class="px-4 py-3.5 text-gray-400">Price</td>
+                                    <td class="px-4 py-3.5">
+                                    <span class="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-green-900/60 text-green-300 border border-green-800/60">Confirmed</span>
+                                    </td>
+                                    <td class="px-4 py-3.5 text-gray-400">Note</td>
+                                    <td class="px-5 py-3.5 text-right">
+                                    <button class="opacity-0 group-hover:opacity-100 text-xs text-gray-500 hover:text-gray-700 border border-gray-200 hover:border-gray-400 px-2.5 py-1 rounded-md transition-all">View</button>
+                                    </td>
+                                </tr> 
+                                @endforeach
+                                
+                        
+                                </tbody>
+                            </table>
                         </div>
+
+                    
+                        <!-- Card footer -->
+                        <div class="px-5 py-3 border-t border-gray-800 flex items-center justify-between">
+                        <p class="text-xs text-gray-600">Showing 5 of 5 appointments</p>
+                        <div class="flex items-center gap-1">
+                            <button class="text-xs text-gray-500 hover:text-gray-300 border border-gray-800 hover:border-gray-700 px-2.5 py-1 rounded-md transition-colors">Previous</button>
+                            <button class="text-xs text-gray-500 hover:text-gray-300 border border-gray-800 hover:border-gray-700 px-2.5 py-1 rounded-md transition-colors">Next</button>
+                        </div>
+                        </div>
+                        @else 
+                        <div>no appointment yet</div>
+                        @endif
+                    
+                    </div>
+                        <!-- end of d fist  -->
                     </div>
                 </div>
             </div>
@@ -780,947 +835,23 @@
 
     <script>
         // Sample appointment data
-        const sampleAppointments = [
-            {
-                id: 1,
-                customer: {
-                    name: "John Smith",
-                    email: "john.smith@email.com",
-                    phone: "(555) 123-4567",
-                    initials: "JS"
-                },
-                serviceType: "ac",
-                serviceName: "AC Repair",
-                date: "2023-11-20",
-                time: "10:30",
-                duration: 90,
-                status: "pending",
-                notes: "AC unit not cooling properly. Check refrigerant levels.",
-                amount: 245,
-                createdAt: "2023-11-15"
-            },
-            {
-                id: 2,
-                customer: {
-                    name: "Sarah Johnson",
-                    email: "sarah.j@email.com",
-                    phone: "(555) 987-6543",
-                    initials: "SJ"
-                },
-                serviceType: "plumbing",
-                serviceName: "Plumbing Inspection",
-                date: "2023-11-20",
-                time: "14:00",
-                duration: 60,
-                status: "confirmed",
-                notes: "Kitchen sink leaking. Need to replace faucet.",
-                amount: 180,
-                createdAt: "2023-11-14"
-            },
-            {
-                id: 3,
-                customer: {
-                    name: "Michael Brown",
-                    email: "michael.b@email.com",
-                    phone: "(555) 456-7890",
-                    initials: "MB"
-                },
-                serviceType: "electrical",
-                serviceName: "Electrical Wiring",
-                date: "2023-11-21",
-                time: "16:15",
-                duration: 120,
-                status: "pending",
-                notes: "Install new outlets in living room.",
-                amount: 320,
-                createdAt: "2023-11-13"
-            },
-            {
-                id: 4,
-                customer: {
-                    name: "Alex Williams",
-                    email: "alex.w@email.com",
-                    phone: "(555) 321-0987",
-                    initials: "AW"
-                },
-                serviceType: "painting",
-                serviceName: "Interior Painting",
-                date: "2023-11-22",
-                time: "09:00",
-                duration: 240,
-                status: "confirmed",
-                notes: "Paint living room walls. Customer selected 'Seafoam Green' color.",
-                amount: 450,
-                createdAt: "2023-11-10"
-            },
-            {
-                id: 5,
-                customer: {
-                    name: "Emily Davis",
-                    email: "emily.d@email.com",
-                    phone: "(555) 654-3210",
-                    initials: "ED"
-                },
-                serviceType: "ac",
-                serviceName: "AC Maintenance",
-                date: "2023-11-19",
-                time: "11:00",
-                duration: 60,
-                status: "completed",
-                notes: "Regular seasonal maintenance completed.",
-                amount: 120,
-                createdAt: "2023-11-05"
-            },
-            {
-                id: 6,
-                customer: {
-                    name: "Robert Wilson",
-                    email: "robert.w@email.com",
-                    phone: "(555) 789-0123",
-                    initials: "RW"
-                },
-                serviceType: "plumbing",
-                serviceName: "Water Heater Repair",
-                date: "2023-11-18",
-                time: "13:30",
-                duration: 90,
-                status: "completed",
-                notes: "Replaced heating element. System working properly now.",
-                amount: 275,
-                createdAt: "2023-11-01"
-            },
-            {
-                id: 7,
-                customer: {
-                    name: "Lisa Anderson",
-                    email: "lisa.a@email.com",
-                    phone: "(555) 234-5678",
-                    initials: "LA"
-                },
-                serviceType: "electrical",
-                serviceName: "Light Fixture Installation",
-                date: "2023-11-17",
-                time: "15:00",
-                duration: 60,
-                status: "cancelled",
-                notes: "Customer cancelled due to scheduling conflict.",
-                amount: 0,
-                createdAt: "2023-10-28"
-            }
-        ];
 
-        // State management
-        let appointments = [...sampleAppointments];
-        let currentTab = 'upcoming';
-        let currentCalendarMonth = new Date().getMonth();
-        let currentCalendarYear = new Date().getFullYear();
-
-        // DOM Elements
-        const themeToggle = document.getElementById('themeToggle');
-        const htmlElement = document.documentElement;
-        const appointmentForm = document.getElementById('appointmentForm');
-        const appointmentList = document.getElementById('appointmentList');
-        const emptyAppointmentState = document.getElementById('emptyAppointmentState');
-        const appointmentSearch = document.getElementById('appointmentSearch');
-        const appointmentListTitle = document.getElementById('appointmentListTitle');
-        const appointmentListSubtitle = document.getElementById('appointmentListSubtitle');
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const durationButtons = document.querySelectorAll('.duration-btn');
-        const appointmentDetailModal = document.getElementById('appointmentDetailModal');
-        const appointmentDetailContent = document.getElementById('appointmentDetailContent');
-        const closeDetailModal = document.getElementById('closeDetailModal');
-        const successModal = document.getElementById('successModal');
-        const successTitle = document.getElementById('successTitle');
-        const successMessage = document.getElementById('successMessage');
-        const closeSuccessModal = document.getElementById('closeSuccessModal');
-        const createFirstAppointment = document.getElementById('createFirstAppointment');
-        const openAppointmentModal = document.getElementById('openAppointmentModal');
-        const quickCalendar = document.getElementById('quickCalendar');
-        const currentMonthElement = document.getElementById('currentMonth');
-        const prevMonthBtn = document.getElementById('prevMonth');
-        const nextMonthBtn = document.getElementById('nextMonth');
-        
-        // Stats elements
-        const totalAppointmentsEl = document.getElementById('totalAppointments');
-        const pendingAppointmentsEl = document.getElementById('pendingAppointments');
-        const confirmedAppointmentsEl = document.getElementById('confirmedAppointments');
-        const completedAppointmentsEl = document.getElementById('completedAppointments');
-
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load appointments
-            renderAppointments();
-            updateStats();
-            generateQuickCalendar();
-            
-            // Theme toggle
-            const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-                htmlElement.classList.add('dark');
-            }
-            
-            themeToggle.addEventListener('click', () => {
-                htmlElement.classList.toggle('dark');
-                localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
-            });
-            
-            // Tab switching
-            tabButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const tab = this.getAttribute('data-tab');
-                    switchTab(tab);
-                });
-            });
-            
-            // Duration button selection
-            durationButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    durationButtons.forEach(btn => {
-                        btn.classList.remove('btn-primary');
-                        btn.classList.add('border-gray-300', 'dark:border-gray-600');
-                    });
-                    this.classList.add('btn-primary');
-                    this.classList.remove('border-gray-300', 'dark:border-gray-600');
-                });
-            });
-            
-            // Form submission
-            appointmentForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                createNewAppointment();
-            });
-            
-            // Search functionality
-            appointmentSearch.addEventListener('input', function() {
-                renderAppointments();
-            });
-            
-            // Modal close buttons
-            closeDetailModal.addEventListener('click', () => {
-                appointmentDetailModal.classList.add('hidden');
-            });
-            
-            closeSuccessModal.addEventListener('click', () => {
-                successModal.classList.add('hidden');
-            });
-            
-            // Close modals when clicking outside
-            appointmentDetailModal.addEventListener('click', (e) => {
-                if (e.target === appointmentDetailModal) {
-                    appointmentDetailModal.classList.add('hidden');
-                }
-            });
-            
-            successModal.addEventListener('click', (e) => {
-                if (e.target === successModal) {
-                    successModal.classList.add('hidden');
-                }
-            });
-            
-            // Create first appointment button
-            createFirstAppointment.addEventListener('click', () => {
-                // In a real app, this would open the form
-                appointmentForm.scrollIntoView({ behavior: 'smooth' });
-            });
-            
-            // Calendar navigation
-            prevMonthBtn.addEventListener('click', () => {
-                currentCalendarMonth--;
-                if (currentCalendarMonth < 0) {
-                    currentCalendarMonth = 11;
-                    currentCalendarYear--;
-                }
-                generateQuickCalendar();
-            });
-            
-            nextMonthBtn.addEventListener('click', () => {
-                currentCalendarMonth++;
-                if (currentCalendarMonth > 11) {
-                    currentCalendarMonth = 0;
-                    currentCalendarYear++;
-                }
-                generateQuickCalendar();
-            });
-        });
-
-        // Switch tab
-        function switchTab(tab) {
-            currentTab = tab;
-            
-            // Update tab buttons
-            tabButtons.forEach(button => {
-                if (button.getAttribute('data-tab') === tab) {
-                    button.classList.add('active');
-                } else {
-                    button.classList.remove('active');
-                }
-            });
-            
-            // Update list title
-            let title = '';
-            let subtitle = '';
-            
-            switch(tab) {
-                case 'upcoming':
-                    title = 'Upcoming Appointments';
-                    subtitle = 'Appointments scheduled for the next 7 days';
-                    break;
-                case 'pending':
-                    title = 'Pending Appointments';
-                    subtitle = 'Appointments awaiting confirmation';
-                    break;
-                case 'confirmed':
-                    title = 'Confirmed Appointments';
-                    subtitle = 'Appointments confirmed by customers';
-                    break;
-                case 'completed':
-                    title = 'Completed Appointments';
-                    subtitle = 'Successfully completed appointments';
-                    break;
-                case 'cancelled':
-                    title = 'Cancelled Appointments';
-                    subtitle = 'Cancelled or rescheduled appointments';
-                    break;
-            }
-            
-            appointmentListTitle.textContent = title;
-            appointmentListSubtitle.textContent = subtitle;
-            
-            // Render appointments
-            renderAppointments();
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['DM Sans', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          }
         }
+      }
+    }
+  
+ 
+  
 
-        // Render appointments
-        function renderAppointments() {
-            appointmentList.innerHTML = '';
-            
-            // Filter appointments based on current tab
-            let filteredAppointments = appointments.filter(appointment => {
-                if (currentTab === 'upcoming') {
-                    // Show pending and confirmed appointments for upcoming dates
-                    const appointmentDate = new Date(appointment.date);
-                    const today = new Date();
-                    const weekFromNow = new Date();
-                    weekFromNow.setDate(today.getDate() + 7);
-                    
-                    return (appointment.status === 'pending' || appointment.status === 'confirmed') &&
-                           appointmentDate >= today &&
-                           appointmentDate <= weekFromNow;
-                } else {
-                    return appointment.status === currentTab;
-                }
-            });
-            
-            // Apply search filter
-            const searchTerm = appointmentSearch.value.toLowerCase();
-            if (searchTerm) {
-                filteredAppointments = filteredAppointments.filter(appointment => {
-                    return appointment.customer.name.toLowerCase().includes(searchTerm) ||
-                           appointment.serviceName.toLowerCase().includes(searchTerm) ||
-                           appointment.notes.toLowerCase().includes(searchTerm);
-                });
-            }
-            
-            // Show empty state if no appointments
-            if (filteredAppointments.length === 0) {
-                emptyAppointmentState.classList.remove('hidden');
-                return;
-            }
-            
-            emptyAppointmentState.classList.add('hidden');
-            
-            // Sort by date (soonest first)
-            filteredAppointments.sort((a, b) => {
-                if (a.date === b.date) {
-                    return a.time.localeCompare(b.time);
-                }
-                return new Date(a.date) - new Date(b.date);
-            });
-            
-            // Render appointment cards
-            filteredAppointments.forEach(appointment => {
-                const appointmentCard = document.createElement('div');
-                appointmentCard.className = `appointment-card border-b border-gray-200 dark:border-gray-700 p-6 last:border-b-0 ${appointment.status}`;
-                appointmentCard.dataset.id = appointment.id;
-                
-                // Format date
-                const appointmentDate = new Date(appointment.date);
-                const formattedDate = appointmentDate.toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric'
-                });
-                
-                // Format time
-                const [hours, minutes] = appointment.time.split(':');
-                const formattedTime = new Date(0, 0, 0, hours, minutes).toLocaleTimeString('en-US', {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true
-                });
-                
-                // Format duration
-                const durationHours = Math.floor(appointment.duration / 60);
-                const durationMinutes = appointment.duration % 60;
-                let durationText = '';
-                if (durationHours > 0) {
-                    durationText += `${durationHours} hr`;
-                    if (durationHours > 1) durationText += 's';
-                    if (durationMinutes > 0) durationText += ' ';
-                }
-                if (durationMinutes > 0) {
-                    durationText += `${durationMinutes} min`;
-                }
-                
-                // Status badge
-                let statusBadgeClass = '';
-                let statusText = '';
-                
-                switch(appointment.status) {
-                    case 'pending':
-                        statusBadgeClass = 'status-pending';
-                        statusText = 'Pending';
-                        break;
-                    case 'confirmed':
-                        statusBadgeClass = 'status-confirmed';
-                        statusText = 'Confirmed';
-                        break;
-                    case 'completed':
-                        statusBadgeClass = 'status-completed';
-                        statusText = 'Completed';
-                        break;
-                    case 'cancelled':
-                        statusBadgeClass = 'status-cancelled';
-                        statusText = 'Cancelled';
-                        break;
-                }
-                
-                // Service badge
-                let serviceBadgeClass = '';
-                switch(appointment.serviceType) {
-                    case 'ac':
-                        serviceBadgeClass = 'service-ac';
-                        break;
-                    case 'plumbing':
-                        serviceBadgeClass = 'service-plumbing';
-                        break;
-                    case 'electrical':
-                        serviceBadgeClass = 'service-electrical';
-                        break;
-                    case 'painting':
-                        serviceBadgeClass = 'service-painting';
-                        break;
-                }
-                
-                appointmentCard.innerHTML = `
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div class="flex-1">
-                            <div class="flex items-start">
-                                <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white font-semibold mr-4 flex-shrink-0">
-                                    ${appointment.customer.initials}
-                                </div>
-                                <div class="flex-1">
-                                    <div class="flex flex-wrap items-center gap-2 mb-2">
-                                        <h4 class="font-semibold">${appointment.customer.name}</h4>
-                                        <span class="service-badge ${serviceBadgeClass}">${appointment.serviceName}</span>
-                                        <span class="status-badge ${statusBadgeClass}">${statusText}</span>
-                                    </div>
-                                    <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                                        <div class="flex items-center">
-                                            <i class="fas fa-calendar-day mr-2"></i>
-                                            <span>${formattedDate}</span>
-                                        </div>
-                                        <div class="flex items-center">
-                                            <i class="fas fa-clock mr-2"></i>
-                                            <span>${formattedTime} (${durationText})</span>
-                                        </div>
-                                        ${appointment.amount > 0 ? `
-                                        <div class="flex items-center">
-                                            <i class="fas fa-dollar-sign mr-2"></i>
-                                            <span>$${appointment.amount}</span>
-                                        </div>
-                                        ` : ''}
-                                    </div>
-                                    ${appointment.notes ? `
-                                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-3">${appointment.notes}</p>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex space-x-2 flex-shrink-0">
-                            ${appointment.status === 'pending' ? `
-                            <button class="action-btn action-btn-complete" onclick="completeAppointment(${appointment.id})" title="Mark as complete">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            ` : ''}
-                            ${appointment.status !== 'completed' && appointment.status !== 'cancelled' ? `
-                            <button class="action-btn action-btn-edit" onclick="editAppointment(${appointment.id})" title="Edit appointment">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            ` : ''}
-                            <button class="action-btn action-btn-delete" onclick="deleteAppointment(${appointment.id})" title="Delete appointment">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                
-                // Add click event to view details
-                appointmentCard.addEventListener('click', (e) => {
-                    if (!e.target.closest('.action-btn')) {
-                        viewAppointmentDetails(appointment.id);
-                    }
-                });
-                
-                appointmentList.appendChild(appointmentCard);
-            });
-        }
-
-        // Update stats
-        function updateStats() {
-            const total = appointments.length;
-            const pending = appointments.filter(a => a.status === 'pending').length;
-            const confirmed = appointments.filter(a => a.status === 'confirmed').length;
-            const completed = appointments.filter(a => a.status === 'completed').length;
-            
-            totalAppointmentsEl.textContent = total;
-            pendingAppointmentsEl.textContent = pending;
-            confirmedAppointmentsEl.textContent = confirmed;
-            completedAppointmentsEl.textContent = completed;
-        }
-
-        // Create new appointment
-        function createNewAppointment() {
-            // Get form values
-            const customerSelect = document.getElementById('customerSelect');
-            const customerValue = customerSelect.value;
-            const serviceType = document.querySelector('input[name="serviceType"]:checked');
-            const date = document.getElementById('appointmentDate').value;
-            const time = document.getElementById('appointmentTime').value;
-            const notes = document.getElementById('appointmentNotes').value;
-            
-            // Validate form
-            if (!customerValue || !serviceType || !date || !time) {
-                showError('Please fill in all required fields');
-                return;
-            }
-            
-            // Get customer info
-            let customerInfo = {
-                name: "New Customer",
-                email: "customer@email.com",
-                phone: "(555) 000-0000",
-                initials: "NC"
-            };
-            
-            // In a real app, this would fetch customer data from database
-            switch(customerValue) {
-                case '1':
-                    customerInfo = {
-                        name: "John Smith",
-                        email: "john.smith@email.com",
-                        phone: "(555) 123-4567",
-                        initials: "JS"
-                    };
-                    break;
-                case '2':
-                    customerInfo = {
-                        name: "Sarah Johnson",
-                        email: "sarah.j@email.com",
-                        phone: "(555) 987-6543",
-                        initials: "SJ"
-                    };
-                    break;
-                case '3':
-                    customerInfo = {
-                        name: "Michael Brown",
-                        email: "michael.b@email.com",
-                        phone: "(555) 456-7890",
-                        initials: "MB"
-                    };
-                    break;
-                case '4':
-                    customerInfo = {
-                        name: "Alex Williams",
-                        email: "alex.w@email.com",
-                        phone: "(555) 321-0987",
-                        initials: "AW"
-                    };
-                    break;
-                case '5':
-                    customerInfo = {
-                        name: "Emily Davis",
-                        email: "emily.d@email.com",
-                        phone: "(555) 654-3210",
-                        initials: "ED"
-                    };
-                    break;
-            }
-            
-            // Get service info
-            let serviceName = '';
-            switch(serviceType.value) {
-                case 'ac':
-                    serviceName = 'AC Repair';
-                    break;
-                case 'plumbing':
-                    serviceName = 'Plumbing';
-                    break;
-                case 'electrical':
-                    serviceName = 'Electrical';
-                    break;
-                case 'painting':
-                    serviceName = 'Painting';
-                    break;
-            }
-            
-            // Create new appointment
-            const newAppointment = {
-                id: appointments.length > 0 ? Math.max(...appointments.map(a => a.id)) + 1 : 1,
-                customer: customerInfo,
-                serviceType: serviceType.value,
-                serviceName: serviceName,
-                date: date,
-                time: time,
-                duration: 60, // Default duration
-                status: 'pending',
-                notes: notes,
-                amount: 0, // Would calculate based on service
-                createdAt: new Date().toISOString().split('T')[0]
-            };
-            
-            // Add to appointments array
-            appointments.unshift(newAppointment);
-            
-            // Update UI
-            renderAppointments();
-            updateStats();
-            generateQuickCalendar();
-            
-            // Show success modal
-            successTitle.textContent = 'Appointment Created!';
-            successMessage.textContent = `Appointment for ${customerInfo.name} has been scheduled for ${new Date(date).toLocaleDateString()} at ${time}.`;
-            successModal.classList.remove('hidden');
-            
-            // Reset form
-            appointmentForm.reset();
-            
-            // Switch to pending tab
-            switchTab('pending');
-        }
-
-        // View appointment details
-        function viewAppointmentDetails(id) {
-            const appointment = appointments.find(a => a.id === id);
-            if (!appointment) return;
-            
-            // Format date
-            const appointmentDate = new Date(appointment.date);
-            const formattedDate = appointmentDate.toLocaleDateString('en-US', {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric'
-            });
-            
-            // Format time
-            const [hours, minutes] = appointment.time.split(':');
-            const formattedTime = new Date(0, 0, 0, hours, minutes).toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
-            });
-            
-            // Status badge
-            let statusBadgeClass = '';
-            let statusText = '';
-            
-            switch(appointment.status) {
-                case 'pending':
-                    statusBadgeClass = 'status-pending';
-                    statusText = 'Pending';
-                    break;
-                case 'confirmed':
-                    statusBadgeClass = 'status-confirmed';
-                    statusText = 'Confirmed';
-                    break;
-                case 'completed':
-                    statusBadgeClass = 'status-completed';
-                    statusText = 'Completed';
-                    break;
-                case 'cancelled':
-                    statusBadgeClass = 'status-cancelled';
-                    statusText = 'Cancelled';
-                    break;
-            }
-            
-            // Service badge
-            let serviceBadgeClass = '';
-            let serviceIcon = '';
-            
-            switch(appointment.serviceType) {
-                case 'ac':
-                    serviceBadgeClass = 'service-ac';
-                    serviceIcon = 'fas fa-tools';
-                    break;
-                case 'plumbing':
-                    serviceBadgeClass = 'service-plumbing';
-                    serviceIcon = 'fas fa-faucet';
-                    break;
-                case 'electrical':
-                    serviceBadgeClass = 'service-electrical';
-                    serviceIcon = 'fas fa-bolt';
-                    break;
-                case 'painting':
-                    serviceBadgeClass = 'service-painting';
-                    serviceIcon = 'fas fa-paint-roller';
-                    break;
-            }
-            
-            appointmentDetailContent.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="md:col-span-2">
-                        <div class="flex items-start mb-6">
-                            <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white font-semibold text-xl mr-4">
-                                ${appointment.customer.initials}
-                            </div>
-                            <div>
-                                <h4 class="text-xl font-semibold">${appointment.customer.name}</h4>
-                                <p class="text-gray-600 dark:text-gray-400">${appointment.customer.email}</p>
-                                <p class="text-gray-600 dark:text-gray-400">${appointment.customer.phone}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div>
-                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Service</p>
-                                <div class="flex items-center">
-                                    <div class="w-8 h-8 rounded-md bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mr-2">
-                                        <i class="${serviceIcon} text-blue-600 dark:text-blue-400"></i>
-                                    </div>
-                                    <span class="font-medium">${appointment.serviceName}</span>
-                                </div>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Status</p>
-                                <span class="status-badge ${statusBadgeClass}">${statusText}</span>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Date</p>
-                                <p class="font-medium">${formattedDate}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Time</p>
-                                <p class="font-medium">${formattedTime}</p>
-                            </div>
-                        </div>
-                        
-                        ${appointment.notes ? `
-                        <div class="mb-6">
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Notes</p>
-                            <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                <p class="text-gray-700 dark:text-gray-300">${appointment.notes}</p>
-                            </div>
-                        </div>
-                        ` : ''}
-                    </div>
-                    
-                    <div class="md:col-span-1">
-                        <div class="card p-4 mb-4">
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Appointment Actions</p>
-                            <div class="space-y-2">
-                                ${appointment.status === 'pending' ? `
-                                <button class="w-full btn-primary py-2 rounded-lg font-medium" onclick="confirmAppointment(${appointment.id})">
-                                    <i class="fas fa-check mr-2"></i> Confirm
-                                </button>
-                                <button class="w-full btn-secondary py-2 rounded-lg font-medium" onclick="rescheduleAppointment(${appointment.id})">
-                                    <i class="fas fa-calendar-alt mr-2"></i> Reschedule
-                                </button>
-                                ` : ''}
-                                ${appointment.status === 'confirmed' ? `
-                                <button class="w-full btn-primary py-2 rounded-lg font-medium" onclick="completeAppointment(${appointment.id})">
-                                    <i class="fas fa-flag-checkered mr-2"></i> Mark Complete
-                                </button>
-                                ` : ''}
-                                <button class="w-full btn-secondary py-2 rounded-lg font-medium text-red-600 dark:text-red-400" onclick="cancelAppointment(${appointment.id})">
-                                    <i class="fas fa-times mr-2"></i> Cancel Appointment
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="card p-4">
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Quick Contact</p>
-                            <div class="space-y-2">
-                                <button class="w-full flex items-center justify-center space-x-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-green-500 dark:hover:border-green-500 transition-colors" onclick="callCustomer('${appointment.customer.phone}')">
-                                    <i class="fas fa-phone text-green-600 dark:text-green-400"></i>
-                                    <span>Call Customer</span>
-                                </button>
-                                <button class="w-full flex items-center justify-center space-x-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-500 transition-colors" onclick="emailCustomer('${appointment.customer.email}')">
-                                    <i class="fas fa-envelope text-blue-600 dark:text-blue-400"></i>
-                                    <span>Send Email</span>
-                                </button>
-                                <button class="w-full flex items-center justify-center space-x-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-purple-500 dark:hover:border-purple-500 transition-colors" onclick="createInvoice(${appointment.id})">
-                                    <i class="fas fa-file-invoice-dollar text-purple-600 dark:text-purple-400"></i>
-                                    <span>Create Invoice</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            appointmentDetailModal.classList.remove('hidden');
-        }
-
-        // Generate quick calendar
-        function generateQuickCalendar() {
-            quickCalendar.innerHTML = '';
-            
-            // Update month display
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            currentMonthElement.textContent = `${monthNames[currentCalendarMonth]} ${currentCalendarYear}`;
-            
-            // Get first day of month
-            const firstDay = new Date(currentCalendarYear, currentCalendarMonth, 1);
-            const firstDayIndex = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
-            
-            // Get days in month
-            const daysInMonth = new Date(currentCalendarYear, currentCalendarMonth + 1, 0).getDate();
-            
-            // Get today's date
-            const today = new Date();
-            const isCurrentMonth = today.getMonth() === currentCalendarMonth && today.getFullYear() === currentCalendarYear;
-            
-            // Add empty cells for days before the first day of the month
-            for (let i = 0; i < firstDayIndex; i++) {
-                const emptyDay = document.createElement('div');
-                emptyDay.classList.add('h-8');
-                quickCalendar.appendChild(emptyDay);
-            }
-            
-            // Add days of the month
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayElement = document.createElement('div');
-                dayElement.classList.add('calendar-day', 'text-sm');
-                dayElement.textContent = day;
-                
-                // Mark today
-                if (isCurrentMonth && day === today.getDate()) {
-                    dayElement.classList.add('today');
-                }
-                
-                // Check if day has appointments
-                const hasAppointment = appointments.some(appointment => {
-                    const appointmentDate = new Date(appointment.date);
-                    return appointmentDate.getDate() === day && 
-                           appointmentDate.getMonth() === currentCalendarMonth && 
-                           appointmentDate.getFullYear() === currentCalendarYear;
-                });
-                
-                if (hasAppointment) {
-                    dayElement.classList.add('has-appointment');
-                }
-                
-                // Add click event
-                dayElement.addEventListener('click', () => {
-                    // In a real app, this would filter appointments by date
-                    console.log(`Selected date: ${currentCalendarYear}-${currentCalendarMonth + 1}-${day}`);
-                });
-                
-                quickCalendar.appendChild(dayElement);
-            }
-        }
-
-        // Appointment actions
-        function completeAppointment(id) {
-            const appointment = appointments.find(a => a.id === id);
-            if (appointment) {
-                appointment.status = 'completed';
-                renderAppointments();
-                updateStats();
-                appointmentDetailModal.classList.add('hidden');
-                showSuccess('Appointment marked as completed!');
-            }
-        }
-
-        function confirmAppointment(id) {
-            const appointment = appointments.find(a => a.id === id);
-            if (appointment) {
-                appointment.status = 'confirmed';
-                renderAppointments();
-                updateStats();
-                appointmentDetailModal.classList.add('hidden');
-                showSuccess('Appointment confirmed!');
-            }
-        }
-
-        function cancelAppointment(id) {
-            if (confirm('Are you sure you want to cancel this appointment? This action cannot be undone.')) {
-                const appointment = appointments.find(a => a.id === id);
-                if (appointment) {
-                    appointment.status = 'cancelled';
-                    renderAppointments();
-                    updateStats();
-                    appointmentDetailModal.classList.add('hidden');
-                    showSuccess('Appointment cancelled.');
-                }
-            }
-        }
-
-        function deleteAppointment(id) {
-            if (confirm('Are you sure you want to delete this appointment? This action cannot be undone.')) {
-                const appointmentIndex = appointments.findIndex(a => a.id === id);
-                if (appointmentIndex !== -1) {
-                    appointments.splice(appointmentIndex, 1);
-                    renderAppointments();
-                    updateStats();
-                    showSuccess('Appointment deleted.');
-                }
-            }
-        }
-
-        function editAppointment(id) {
-            const appointment = appointments.find(a => a.id === id);
-            if (appointment) {
-                // In a real app, this would populate the form with appointment data
-                alert(`Editing appointment for ${appointment.customer.name}. In a real app, this would open the form with pre-filled data.`);
-            }
-        }
-
-        function rescheduleAppointment(id) {
-            const appointment = appointments.find(a => a.id === id);
-            if (appointment) {
-                alert(`Rescheduling appointment for ${appointment.customer.name}. In a real app, this would open a rescheduling modal.`);
-            }
-        }
-
-        function callCustomer(phone) {
-            alert(`Calling ${phone}. In a real app, this would initiate a phone call.`);
-        }
-
-        function emailCustomer(email) {
-            alert(`Opening email composer for ${email}. In a real app, this would open your email client.`);
-        }
-
-        function createInvoice(id) {
-            const appointment = appointments.find(a => a.id === id);
-            if (appointment) {
-                alert(`Creating invoice for ${appointment.customer.name}. In a real app, this would open the invoice creation form.`);
-            }
-        }
-
-        function showSuccess(message) {
-            successTitle.textContent = 'Success!';
-            successMessage.textContent = message;
-            successModal.classList.remove('hidden');
-        }
-
-        function showError(message) {
-            alert(`Error: ${message}`);
-        }
+  
 
         // Mobile menu toggle
         function toggleMobileMenu() {

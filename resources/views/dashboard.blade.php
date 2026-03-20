@@ -355,6 +355,7 @@
                 </div>
                 <nav class="p-4">
                     <!-- Mobile navigation items would go here -->
+                    @include('layouts.nav')
                 </nav>
             </div>
         </div>

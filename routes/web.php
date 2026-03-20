@@ -31,9 +31,13 @@ Route::get('dashboard', function () {
 Route::get('customers', [CustomerController::class, 'index'])->name('customer');
 
 
+Route::get('customer',[CustomerController::class, 'create'])->name('customer.add');
+Route::post('customer',[CustomerController::class, 'store'])->name('customer.store');
+
 
 // Route for handling appointment related 
 Route::get('appointments', [AppointmentController::class, 'index'])->name('appointment');
+Route::post('appointment/schedule',[AppointmentController::class, 'store'])->name('appointment.save');
 
 
 // revunue route 
@@ -43,3 +47,7 @@ Route::get('analysis', [TransactionsController::class, 'analysis'])->name('analy
 Route::get('test', function () {
     return view('layouts.main');
 });
+
+
+
+

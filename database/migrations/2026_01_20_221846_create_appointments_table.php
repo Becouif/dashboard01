@@ -16,15 +16,12 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('customer_id')->constrained('customers');
             $table->foreignId('services_id')->constrained('services');
-            $table->string('title');
-            $table->text('description');
-            $table->enum('status', ['scheduled','confirmed','in_progress','completed','cancelled','no_show']);
             $table->date('appointment_date');
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
             $table->integer('duration_minutes')->default(00);
             $table->decimal('price');
-            $table->decimal('paid_amount');
+            $table->decimal('paid_amount')->default(0.00);
             $table->enum('payment_status',['pending','partial', 'paid','overdue']);
             $table->text('notes');
             $table->boolean('reminder_sent')->nullable();

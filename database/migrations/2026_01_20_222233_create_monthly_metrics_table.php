@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('appointments_completed');
             $table->integer('new_customers')->default(0);
             $table->integer('repeat_customers')->nullable();
+            
             $table->timestamps();
         });
     }
